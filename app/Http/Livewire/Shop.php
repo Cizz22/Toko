@@ -4,10 +4,11 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Product as M_Product;
+use Carbon\Carbon;
 
 class Shop extends Component
 {
-    public $pajak = "0%";
+    public $pajak = "10%";
 
     public function render()
     {
@@ -22,8 +23,8 @@ class Shop extends Component
         ]);
 
         \Cart::session($id)->condition($condition);
-        $items = \Cart::session($id)->getContent()->sortBy(function ($cart){
-            return $cart->attributes->get('added_at');
+        $items = \Cart::session($id)->getContent()->sortByDesc(function ($cart){
+            return $cart->attributes->get('added_at',);
         });
 
 
@@ -33,9 +34,9 @@ class Shop extends Component
         }else{
             foreach ($items as $item) {
                 $cart[] = [
-                    'rowId' => $item->id,
+                    'rowId' => $item->Id,
                     'name' => $item->name,
-                    'qty' => $item->qty,
+                    'quantity' => $item->quantity,
                     'price' => $item->price,
                     'total' => $item->getPriceSum(),
                 ];
@@ -63,5 +64,28 @@ class Shop extends Component
                 'data' => $data
             ]);
         }
+        public function addProduct($id){
+            $rowId = "Cart".$id;
+            $cart = \Cart::session(Auth()->id())->getContent();
+            $cekid = $cart->whereIn('Id', $rowId);
+
+            if($cekid->isNotEmpty()){
+                \Cart::session(Auth()->id())->update($rowId,[
+                    'relative' => true,
+                    'quatity' => 1
+                ]);
+            }else{
+                $product = M_Product::findOrFail($id);
+                \Cart::session(Auth()->id())->add([
+                    'id' => "Cart".$product->id,
+                    'name' => $product->name,
+                    'quantity' => 1,
+                    'attributes' => [
+                        'added_at' => Carbon::now()
+                    ],
+                    'price' => $product->price
+                ]);
+            }
+
+        }
     }
-    

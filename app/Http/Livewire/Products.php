@@ -54,4 +54,6 @@ class Products extends Component
         $this->price='';
     }
 
+   
+
 }
