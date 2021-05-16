@@ -34,7 +34,7 @@ class Shop extends Component
         }else{
             foreach ($items as $item) {
                 $cart[] = [
-                    'rowId' => $item->Id,
+                    'rowId' => $item->id,
                     'name' => $item->name,
                     'quantity' => $item->quantity,
                     'price' => $item->price,
@@ -57,7 +57,6 @@ class Shop extends Component
                 'total' => $total,
                 'pajak' => $pajak
             ];
-
             return view('livewire.shop', [
                 'products' => $products,
                 'carts' => $cartData,
@@ -65,19 +64,25 @@ class Shop extends Component
             ]);
         }
         public function addProduct($id){
-            $rowId = "Cart".$id;
             $cart = \Cart::session(Auth()->id())->getContent();
-            $cekid = $cart->whereIn('Id', $rowId);
-
+            $cekid = $cart->whereIn('id', $id);
+            
             if($cekid->isNotEmpty()){
-                \Cart::session(Auth()->id())->update($rowId,[
-                    'relative' => true,
-                    'quatity' => 1
+                $product = M_Product::findOrFail($id);
+                if($product->qty == $cekid[$id]->quantity){
+                    return session()->flash('error','Stok item habis');
+                }
+
+                \Cart::session(Auth()->id())->update($id,[
+                    'quantity' => [
+                        'relative' => true,
+                        'value' => 1
+                    ]
                 ]);
             }else{
                 $product = M_Product::findOrFail($id);
                 \Cart::session(Auth()->id())->add([
-                    'id' => "Cart".$product->id,
+                    'id' => $product->id,
                     'name' => $product->name,
                     'quantity' => 1,
                     'attributes' => [
@@ -87,5 +92,38 @@ class Shop extends Component
                 ]);
             }
 
+        }
+        public function addItemInCart($id){
+            $product = M_Product::findOrFail($id);
+            $cart = \Cart::session(Auth()->id())->getContent();
+            $cekid = $cart->whereIn('id', $id);
+
+            if($product->qty == $cekid[$id]->quantity){
+                return session()->flash('error','Stok item habis');
+            }else{
+                \Cart::session(Auth()->id())->update($id, [
+                    'quantity' => [
+                        'relative' => true,
+                        'value' => 1
+                    ]
+                ]);
+            }
+
+        }
+        public function deleteItemInCart($id){
+            $product = M_Product::findOrFail($id);
+            $cart = \Cart::session(Auth()->id())->getContent();
+            $cekid = $cart->whereIn('id', $id);
+           
+            if($cekid[$id]->quantity == 1){
+                \Cart::session(Auth()->id())->remove($id);
+            }else{
+            \Cart::session(Auth()->id())->update($id, [
+                'quantity' => [
+                    'relative' => true,
+                    'value' => -1
+                ]
+            ]);
+                }
         }
     }

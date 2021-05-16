@@ -91,12 +91,11 @@
     </div>
     
  
-    <script>
+<script>
     $(document).ready(function() {
     $('#listProduct').DataTable();
 } );
 </script> 
-
     @livewireScripts
 </body>
 </html>

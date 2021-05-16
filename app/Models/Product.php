@@ -13,7 +13,14 @@ class Product extends Model
         'image',
         'description',
         'qty',
-        'price'
+        'price',
+        'seller',
     ];
     use HasFactory;
+
+    public function user()
+    {
+            return $this->belongsTo(User::class,'seller');
+    }
+
 }

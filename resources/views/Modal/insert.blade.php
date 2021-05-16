@@ -8,6 +8,9 @@
               </button>
           </div>
          <div class="modal-body">
+             @if(session()->has('success'))
+                <h5 class="text-success">{{session('success')}}</h5>
+             @endif
          <form wire:submit.prevent="uploadProduct()">
               <div class="form-group"> 
                   <label for="">Product Name</label>

@@ -24,6 +24,7 @@
             <th>Description</th>
             <th>Price</th>
             <th>Qty</th>
+            <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -35,6 +36,9 @@
                 <td>{{$product->description}}</td>
                 <td>{{$product->price}}</td>
                 <td>{{$product->qty}}</td>
+                <td>
+                <button wire:click = "deleteProduct({{$product->id}})" class="btn btn-danger ">Delete</button>
+                </td>
             </tr>
             @endforeach
         </tbody>
@@ -43,18 +47,23 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card">
-            <div class="card-body">
-                <h2>Message</h2>
+        <div class= "card shadow mb-4">
+            <div class="card-header">
+                <h2 class="card-title">Message</h2>
             </div>
         </div>
     </div>
 </div>
 
+
+
 <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" defer></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" defer ></script>
 <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" defer></script>
-<script type="text/javascript">
+<script src="https://cdn.socket.io/4.1.1/socket.io.min.js" integrity="sha384-cdrFIqe3RasCMNE0jeFG9xJHog/tgOVC1E9Lzve8LQN1g5WUHo0Kvk1mawWjxX7a" crossorigin="anonymous"></script>
+
+
+<script>
 $(document).ready(function() {
     $('#listProduct').DataTable();
 } );
