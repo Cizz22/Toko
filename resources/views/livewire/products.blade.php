@@ -3,8 +3,11 @@
         <div class= "card shadow mb-4">
         <div class="card-body">
         <div class="row">
-            <div class="col-10">
+            <div class="col-7">
                 <h1 class="h3 mb-2 text-gray-800">Product List</h1>
+                </div>
+                <div class="col-md-3">
+                    <input wire:model="search" type="text" class="form-control" placeholder="Search">
                 </div>
                 <div class="col-2 justify-content-around d-flex flex-column">
                 <button type="button" class="btn btn-primary mb-3 " data-toggle="modal" data-target="#exampleModal">
@@ -14,7 +17,7 @@
 @include('Modal.insert')
 </div>
         </div>
-        
+
         <table id="listProduct" class="table table-striped table-bordered table-hovered">
         <thead>
             <tr>
@@ -28,7 +31,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($products as $index=>$product)
+            @forelse ($products as $index=>$product)
             <tr>
                 <td>{{$index+1}}</td>
                 <td>{{$product->name}}</td>
@@ -40,9 +43,12 @@
                 <button wire:click = "deleteProduct({{$product->id}})" class="btn btn-danger ">Delete</button>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <td colspan="7"><h4 class="text-center font-weight-bold">Not Found</h4></td>
+            @endforelse
         </tbody>
         </table>
+        <div  >{{ $products->links() }}</div>
         </div>
         </div>
     </div>
@@ -62,9 +68,3 @@
 <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" defer></script>
 <script src="https://cdn.socket.io/4.1.1/socket.io.min.js" integrity="sha384-cdrFIqe3RasCMNE0jeFG9xJHog/tgOVC1E9Lzve8LQN1g5WUHo0Kvk1mawWjxX7a" crossorigin="anonymous"></script>
 
-
-<script>
-$(document).ready(function() {
-    $('#listProduct').DataTable();
-} );
-</script>

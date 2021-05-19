@@ -7,15 +7,25 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Product as M_Product;
 use illuminate\Support\facades\Storage;
-
+use Livewire\WithPagination;
 
 class Products extends Component
 {
     use WithFileUploads;
+    use WithPagination;
+
+    public $search;
+    protected $paginationTheme = 'bootstrap';
     public $name, $image, $description, $qty, $price;
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $product = M_Product::orderBy('created_at', 'DESC')->where('seller',Auth()->id())->get();
+        $product = M_Product::where('name', 'like', '%'.$this->search.'%')->orderBy('created_at', 'DESC')->where('seller',Auth()->id())->paginate(5);
         return view('livewire.products', [
             'products' =>$product
         ]);
@@ -29,8 +39,10 @@ class Products extends Component
             'price' =>'required',
         ]);
 
+
+
         $imgname = md5($this->image.microtime().'.'.$this->image->extension());
-        
+
         Storage::putFileAs(
             'public/images',
             $this->image,
@@ -60,6 +72,7 @@ class Products extends Component
     }
 
     public function editProduct(){
+
         $this->validate([
             'name' => 'required',
             'image' => 'image|max:2048|required',
@@ -69,14 +82,14 @@ class Products extends Component
         ]);
 
         $imgname = md5($this->image.microtime().'.'.$this->image->extension());
-        
+
         Storage::putFileAs(
             'public/images',
             $this->image,
             $imgname
         );
 
-        
+
 
         session()->flash('success','Edit Success');
 
@@ -87,6 +100,6 @@ class Products extends Component
         $this->price='';
     }
 
-   
+
 
 }

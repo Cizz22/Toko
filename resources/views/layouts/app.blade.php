@@ -22,7 +22,7 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="main-header navbar navbar-expand navbar-dark bg-secondary">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/home') }}">
                     Home
@@ -89,13 +89,9 @@
             </div>
         </main>
     </div>
-    
- 
-<script>
-    $(document).ready(function() {
-    $('#listProduct').DataTable();
-} );
-</script> 
+
+
     @livewireScripts
+    <script src="https://cdn.jsdelivr.net/gh/livewire/turbolinks@v0.1.x/dist/livewire-turbolinks.js" data-turbolinks-eval="false" data-turbo-eval="false"></script>
 </body>
 </html>

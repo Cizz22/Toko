@@ -5,14 +5,25 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Product as M_Product;
 use Carbon\Carbon;
+use Livewire\WithPagination;
 
 class Shop extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
+    public $search;
+
     public $pajak = "10%";
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {
-        $products = M_Product::orderBy('created_at', 'DESC')->get();
+        $products = M_Product::where('name', 'like', '%'.$this->search.'%')->orderBy('created_at', 'DESC')->paginate(8);
         $id= Auth()->id();
         $condition = new \Darryldecode\Cart\CartCondition([
             'name' => 'pajak',
@@ -43,10 +54,10 @@ class Shop extends Component
             }
                 $cartData = collect($cart);
             }
-            
+
             $subtotal = \Cart::session($id)->getSubTotal();
             $total = \Cart::session($id)->getTotal();
-            
+
 
             $newCondition = \Cart::session($id)->getCondition('pajak');
             $pajak = $newCondition->getCalculatedValue($subtotal);
@@ -66,7 +77,7 @@ class Shop extends Component
         public function addProduct($id){
             $cart = \Cart::session(Auth()->id())->getContent();
             $cekid = $cart->whereIn('id', $id);
-            
+
             if($cekid->isNotEmpty()){
                 $product = M_Product::findOrFail($id);
                 if($product->qty == $cekid[$id]->quantity){
@@ -114,7 +125,7 @@ class Shop extends Component
             $product = M_Product::findOrFail($id);
             $cart = \Cart::session(Auth()->id())->getContent();
             $cekid = $cart->whereIn('id', $id);
-           
+
             if($cekid[$id]->quantity == 1){
                 \Cart::session(Auth()->id())->remove($id);
             }else{
