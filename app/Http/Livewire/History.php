@@ -2,12 +2,18 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Product;
+use App\Models\Transaction;
 use Livewire\Component;
 
 class History extends Component
 {
     public function render()
     {
-        return view('livewire.history');
+        $transactions = Transaction::where('user_id', Auth()->id())->orderBy('created_at','DESC')->get();
+
+        return view('livewire.history', [
+            'transactions' => $transactions
+        ]);
     }
 }

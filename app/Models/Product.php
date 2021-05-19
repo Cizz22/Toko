@@ -22,5 +22,8 @@ class Product extends Model
     {
             return $this->belongsTo(User::class,'seller');
     }
+    public function transaction(){
+        return $this->hasMany(ProductTransaction::class);
+    }
 
 }

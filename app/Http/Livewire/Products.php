@@ -25,9 +25,11 @@ class Products extends Component
 
     public function render()
     {
-        $product = M_Product::where('name', 'like', '%'.$this->search.'%')->orderBy('created_at', 'DESC')->where('seller',Auth()->id())->paginate(5);
+        $productlist = M_Product::where('name', 'like', '%'.$this->search.'%')->orderBy('created_at', 'DESC')->where('seller',Auth()->id())->paginate(5);
+        $productinfo = M_Product::orderBy('created_at', 'DESC')->where('seller',Auth()->id())->get();
         return view('livewire.products', [
-            'products' =>$product
+            'productslist' =>$productlist,
+            'productsinfo' => $productinfo
         ]);
     }
     public function uploadProduct(){
@@ -71,8 +73,8 @@ class Products extends Component
         $product->delete();
     }
 
-    public function editProduct(){
-
+    public function editProduct($id){
+        $product = M_Product::find($id);
         $this->validate([
             'name' => 'required',
             'image' => 'image|max:2048|required',
@@ -82,14 +84,20 @@ class Products extends Component
         ]);
 
         $imgname = md5($this->image.microtime().'.'.$this->image->extension());
-
+        Storage::delete('public/images/'.$product->image);
         Storage::putFileAs(
             'public/images',
             $this->image,
             $imgname
         );
 
-
+        $product->update([
+            'name' => $this->name,
+            'image' => $imgname,
+            'description' => $this->description,
+            'qty' => $this->qty,
+            'price' => $this->price
+        ]);
 
         session()->flash('success','Edit Success');
 

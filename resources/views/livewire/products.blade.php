@@ -31,13 +31,13 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($products as $index=>$product)
+            @forelse ($productslist as $index=>$product)
             <tr>
                 <td>{{$index+1}}</td>
                 <td>{{$product->name}}</td>
                 <td><img src="{{asset('storage/images/'.$product->image)}}" alt="image" class="img-fluid"></td>
                 <td>{{$product->description}}</td>
-                <td>{{$product->price}}</td>
+                <td>Rp. {{$product->price}}</td>
                 <td>{{$product->qty}}</td>
                 <td>
                 <button wire:click = "deleteProduct({{$product->id}})" class="btn btn-danger ">Delete</button>
@@ -48,14 +48,50 @@
             @endforelse
         </tbody>
         </table>
-        <div  >{{ $products->links() }}</div>
+        <div  >{{ $productslist->links() }}</div>
         </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class= "card shadow mb-4">
             <div class="card-header">
-                <h2 class="card-title">Message</h2>
+                <h2 class="card-title">Info</h2>
+            </div>
+            <div class="card-body">
+
+                @forelse ($productsinfo as $a)
+                    @if($a->transaction->isNotEmpty())
+                    <h3 class="card-title">{{$a->name}} : {{$a->transaction->count()}} Transaksi</h3>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample{{$a->id}}" aria-expanded="false" aria-controls="collapseExample">
+                       Detail
+                      </button>
+                    </p>
+                    <div class="collapse" id="collapseExample{{$a->id}}">
+                      <div class="card card-body">
+                        <table class="table table-hovered table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Transaction Code</th>
+                                    <th>Buyer Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($a->transaction as $transaction)
+                                <tr>
+                                    <td>{{$transaction->invoice_number}}</td>
+                                    <td>{{$transaction->transaction->user->name}}</td>
+                                    <td>{{$transaction->qty}}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    @endif
+                @empty
+                    Not Found
+                @endforelse
             </div>
         </div>
     </div>

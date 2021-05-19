@@ -1,4 +1,4 @@
-<div wire:ignore.self class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div wire:ignore.self class="modal fade" id="editModal{{$product->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,8 +11,8 @@
                @if(session()->has('success'))
                   <h5 class="text-success">{{session('success')}}</h5>
                @endif
-           <form wire:submit.prevent="editProduct()">
-                <div class="form-group"> 
+           <form wire:submit.prevent="editProduct({{$product->id}})">
+                <div class="form-group">
                     <label for="">Product Name</label>
                     <input wire:model="name"  class="form-control" type="text">
                     @error('name')<small class="text-danger"> {{$message}}</small>@enderror
@@ -51,3 +51,4 @@
         </div>
     </div>
   </div>
+
