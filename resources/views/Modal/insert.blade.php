@@ -12,7 +12,7 @@
                 <h5 class="text-success">{{session('success')}}</h5>
              @endif
          <form wire:submit.prevent="uploadProduct()">
-              <div class="form-group"> 
+              <div class="form-group">
                   <label for="">Product Name</label>
                   <input wire:model="name" class="form-control" type="text">
                   @error('name')<small class="text-danger"> {{$message}}</small>@enderror
