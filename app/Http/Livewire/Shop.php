@@ -4,8 +4,14 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\Product as M_Product;
+use App\Models\ProductTransaction;
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Livewire\WithPagination;
+use DB;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
+
+use function PHPUnit\Framework\returnSelf;
 
 class Shop extends Component
 {
@@ -77,9 +83,9 @@ class Shop extends Component
         public function addProduct($id){
             $cart = \Cart::session(Auth()->id())->getContent();
             $cekid = $cart->whereIn('id', $id);
+            $product = M_Product::findOrFail($id);
 
             if($cekid->isNotEmpty()){
-                $product = M_Product::findOrFail($id);
                 if($product->qty == $cekid[$id]->quantity){
                     return session()->flash('error','Stok item habis');
                 }
@@ -91,16 +97,20 @@ class Shop extends Component
                     ]
                 ]);
             }else{
-                $product = M_Product::findOrFail($id);
-                \Cart::session(Auth()->id())->add([
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'quantity' => 1,
-                    'attributes' => [
-                        'added_at' => Carbon::now()
-                    ],
-                    'price' => $product->price
-                ]);
+                if($product->qty == 0){
+                    return session()->flash('error','Stok item habis');
+                }
+                else{
+                    \Cart::session(Auth()->id())->add([
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'quantity' => 1,
+                        'attributes' => [
+                            'added_at' => Carbon::now()
+                        ],
+                        'price' => $product->price
+                    ]);
+                }
             }
 
         }
@@ -136,5 +146,60 @@ class Shop extends Component
                 ]
             ]);
                 }
+        }
+
+        public function buyProduct(){
+            $cartTotal = \Cart::session(Auth()->id())->getTotal();
+
+            DB::beginTransaction();
+            try {
+            $allCart = \Cart::session(Auth()->id())->getContent();
+
+            $cartFilter = $allCart->map(function($item){
+                return [
+                    'id' => $item->id,
+                    'quantity'=> $item->quantity
+                ];
+            });
+
+            foreach ($cartFilter as $item) {
+                $product = M_Product::find($item['id']);
+
+                if($product->qty === 0){
+                    return session()->flash('error','Stok item habis');
+                }
+
+                $product->decrement('qty', $item['quantity']);
+            }
+
+            $id = idGenerator::generate([
+                'table' => 'transactions',
+                'length' => 7,
+                'prefix' => "INV.",
+                'field' => 'invoice_number'
+            ]);
+
+            Transaction::create([
+                'invoice_number' => $id,
+                'user_id' => Auth()->id(),
+                'total' => $cartTotal
+            ]);
+
+            foreach ($cartFilter as $cart) {
+                ProductTransaction::create([
+                    'product_id' => $cart['id'],
+                    'invoice_number' => $id,
+                    'qty' => $cart['quantity']
+                ]);
+            }
+
+            \Cart::session(Auth()->id())->clear();
+
+            DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollback();
+                return session()->flash('error', $th);
+            }
+
         }
     }

@@ -75,7 +75,7 @@
                 <h6 class="card-text"> Sub-total: Rp. {{$data['sub_total']}} </h6>
                 <h6 class="card-text">Pajak: Rp. {{$data['pajak']}} </h6>
                 <h6 class="card-text">Total: Rp. {{$data['total']}}</h6>
-                <button class="btn btn-primary btn-block">Buy</button>
+                <button wire:click="buyProduct()" class="btn btn-primary btn-block">Buy</button>
             </div>
         </div>
     </div>

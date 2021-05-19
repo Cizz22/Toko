@@ -1,8 +1,8 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Products;
 use App\Http\Livewire\Shop;
+use App\Http\Livewire\History;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,13 +17,12 @@ use App\Http\Livewire\Shop;
 Route::get('/', function () {
     return view('welcome');
 });
-
 Auth::routes();
 
 Route::group(['middleware' => ['auth']], function(){
     Route::get('/shop', Shop::class);
     Route::get('/products', Products::class);
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
+    Route::get('/history', History::class);
 });
 
