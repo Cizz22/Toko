@@ -14,9 +14,8 @@ class Products extends Component
     use WithFileUploads;
     use WithPagination;
 
-    public $search;
+    public $search, $name, $image, $description, $qty, $price;
     protected $paginationTheme = 'bootstrap';
-    public $name, $image, $description, $qty, $price;
 
     public function updatingSearch()
     {

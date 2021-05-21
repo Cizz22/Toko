@@ -18,7 +18,7 @@ class CreateProductTransactionsTable extends Migration
             $table->bigInteger('product_id')->unsigned();
             $table->string('invoice_number');
             $table->bigInteger('qty')->unsigned();
-            $table->timestamps()->now();
+            $table->timestamps();
         });
     }
 
